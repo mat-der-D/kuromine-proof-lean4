@@ -133,15 +133,19 @@ theorem solution_x_eq_five {y z : ℕ} (h : Solves 5 y z) : y = 3 ∧ z = 4 := b
               Nat.mul_le_mul ht_ge9 hsucc_ge10
             omega
           · have hq1 : q = 1 := by
-              rw [h_37] at hprod
-              omega
+              apply Nat.eq_of_mul_eq_mul_left (by norm_num : 0 < 37)
+              simpa [h_37] using hprod
             have hz2 : 2 ≤ z := by omega
             have hzsq : 4 ≤ z ^ 2 := by
               calc
                 4 = 2 * 2 := by norm_num
                 _ ≤ z * z := Nat.mul_le_mul hz2 hz2
                 _ = z ^ 2 := by ring
-            have hzsq_le_q : z ^ 2 ≤ q := by simp [q]
+            have hzsq_le_q : z ^ 2 ≤ q := by
+              dsimp [q]
+              calc
+                z ^ 2 ≤ z ^ 2 + z * t := Nat.le_add_right _ _
+                _ ≤ z ^ 2 + z * t + t ^ 2 := Nat.le_add_right _ _
             omega
 
 end KuromineProof
