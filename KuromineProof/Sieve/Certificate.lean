@@ -14,6 +14,7 @@ def sieveStages : List PeriodicStage :=
     { prime := 1009, xPeriod := 504, yPeriod := 168 } ]
 
 /-- Each concrete stage has the stated prime and exponent periods. -/
+set_option exponentiation.threshold 1000 in
 theorem sieveStages_valid : ∀ s ∈ sieveStages, s.IsValid := by
   intro s hs
   simp [sieveStages] at hs
@@ -27,9 +28,7 @@ def finalClasses : List SieveResidueClass :=
     { xModulus := 1008, yModulus := 336, xResidue := 5, yResidue := 333 } ]
 
 /-- Closed finite computation of the simplified sieve. -/
-set_option maxRecDepth 1000000 in
-set_option maxHeartbeats 0 in
-set_option exponentiation.threshold 1000 in
+set_option maxRecDepth 1000000 maxHeartbeats 0 exponentiation.threshold 1000 in
 theorem sieve_computation :
     runPeriodicSieve initialClasses sieveStages = finalClasses := by
   native_decide
