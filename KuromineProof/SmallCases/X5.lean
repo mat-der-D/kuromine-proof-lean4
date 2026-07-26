@@ -132,9 +132,13 @@ theorem solution_x_eq_five {y z : ℕ} (h : Solves 5 y z) : y = 3 ∧ z = 4 := b
             have hprod_ge90 : 90 ≤ t * (t + 1) :=
               Nat.mul_le_mul ht_ge9 hsucc_ge10
             omega
-          · have hq1 : q = 1 := by
+          · have hprod37 : 37 * q = 37 := by
+              calc
+                37 * q = d * q := by rw [h_37]
+                _ = 37 := hprod
+            have hq1 : q = 1 := by
               apply Nat.eq_of_mul_eq_mul_left (by norm_num : 0 < 37)
-              simpa [h_37] using hprod
+              simpa using hprod37
             have hz2 : 2 ≤ z := by omega
             have hzsq : 4 ≤ z ^ 2 := by
               calc
