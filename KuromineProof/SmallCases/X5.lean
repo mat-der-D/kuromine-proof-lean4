@@ -81,6 +81,9 @@ theorem solution_x_eq_five {y z : ℕ} (h : Solves 5 y z) : y = 3 ∧ z = 4 := b
               _ = 0 := by norm_num [hy6_eq3]
           obtain ⟨η, rfl⟩ := hy_div3
           let t : ℕ := 3 ^ η
+          have ht_pos : 0 < t := by
+            dsimp [t]
+            positivity
           have ht_cube : t ^ 3 = 3 ^ (3 * η) := by
             dsimp [t]
             rw [← Nat.pow_mul, mul_comm]
