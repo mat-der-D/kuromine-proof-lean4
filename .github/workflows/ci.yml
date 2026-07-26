@@ -34,9 +34,6 @@ jobs:
           git status --short >> lean-status.txt
           printf '\nmanifest:\n' >> lean-status.txt
           ls -l lake-manifest.json >> lean-status.txt 2>&1 || true
-          set +e
-          lake build > lean-rerun.log 2>&1
-          printf '\nrerun-exit=%s\n' "$?" >> lean-status.txt
 
       - name: Upload Lean diagnostics
         if: always()
@@ -45,7 +42,6 @@ jobs:
           name: lean-diagnostics
           path: |
             lean-status.txt
-            lean-rerun.log
             lake-manifest.json
 
       - name: Preserve Lean result
