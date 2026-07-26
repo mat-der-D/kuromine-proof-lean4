@@ -13,10 +13,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Lean project with Mathlib cache
+      - name: Set up Lean and Mathlib cache
         uses: leanprover/lean-action@v1
         with:
           auto-config: false
-          build: true
+          build: false
           test: false
           lint: false
+
+      - name: Build Lean project
+        shell: bash
+        run: |
+          set +e
+          lake exe cache get > lean-build.log 2>&1
+          status=$?
+          if [ "$status" -eq 0 ]; then
+            lake build >> lean-build.log 2>&1
+            status=$?
+          fi
+          cat lean-build.log
+          exit "$status"
+
+      - name: Upload failed build log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lean-build-log
+          path: lean-build.log
