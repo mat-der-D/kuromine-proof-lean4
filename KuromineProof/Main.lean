@@ -1,15 +1,14 @@
-import KuromineProof.LargeCase
+import KuromineProof.Sieve.Certificate
 
 namespace KuromineProof
 
-/-- Public form of the large-exponent elimination theorem. -/
+/-- Public large-exponent elimination theorem. -/
 theorem no_large_solution
     {x y z : ℕ}
     (hx6 : 6 ≤ x)
-    (hx4 : x % 4 = 1)
-    (hy48 : y % 48 = 45)
+    (hy3 : 3 ≤ y)
     (hsol : Solves x y z) :
     False :=
-  no_solution_of_congruences hx6 hx4 hy48 hsol
+  no_solution_large_exponents hx6 hy3 hsol
 
 end KuromineProof
