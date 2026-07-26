@@ -114,7 +114,7 @@ theorem classify_solution_x_eq_five
     have ht_lt_four : t < 4 := by
       nlinarith [hprod12]
     have ht_eq_three : t = 3 := by
-      interval_cases t <;> norm_num at hprod12 ⊢
+      interval_cases t <;> norm_num at hprod12 <;> omega
     have hη1 : η = 1 := by
       by_cases hη0 : η = 0
       · subst η
