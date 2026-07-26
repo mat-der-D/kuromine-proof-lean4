@@ -27,6 +27,67 @@ theorem eta_mod_four
     η % 4 = 3 := by
   omega
 
+private theorem five_dvd_z_of_congruences
+    {x y z η : ℕ}
+    (hx4 : x % 4 = 1)
+    (hy48 : y % 48 = 45)
+    (hy : y = 3 * η)
+    (hsol : Solves x y z) :
+    5 ∣ z := by
+  subst y
+  unfold Solves at hsol
+  have hy4 : (3 * η) % 4 = 1 := by omega
+  have h2x5 : 2 ^ x % 5 = 2 := by
+    calc
+      2 ^ x % 5 = 2 ^ 1 % 5 :=
+        nat_pow_mod_eq_of_period (a := 2) (d := 4) (m := 5)
+          (by decide) hx4
+      _ = 2 := by norm_num
+  have h3y5 : 3 ^ (3 * η) % 5 = 3 := by
+    calc
+      3 ^ (3 * η) % 5 = 3 ^ 1 % 5 :=
+        nat_pow_mod_eq_of_period (a := 3) (d := 4) (m := 5)
+          (by decide) hy4
+      _ = 3 := by norm_num
+  have hz_mod5 : z ^ 3 % 5 = 0 := by
+    calc
+      z ^ 3 % 5 = (2 ^ x + 3 ^ (3 * η) + 5) % 5 := by rw [← hsol]
+      _ = 0 := by
+        rw [Nat.add_mod (2 ^ x + 3 ^ (3 * η)), Nat.add_mod (2 ^ x), h2x5, h3y5]
+  have hcube : 5 ∣ z ^ 3 := Nat.dvd_of_mod_eq_zero hz_mod5
+  exact Nat.Prime.dvd_of_dvd_pow (by norm_num) hcube
+
+private theorem z_mod_eight_of_congruences
+    {x y z η : ℕ}
+    (hx6 : 6 ≤ x)
+    (hy48 : y % 48 = 45)
+    (hy : y = 3 * η)
+    (hsol : Solves x y z) :
+    z % 8 = 6 := by
+  subst y
+  unfold Solves at hsol
+  have hy16 : (3 * η) % 16 = 13 := by omega
+  have h3y64 : 3 ^ (3 * η) % 64 = 19 := by
+    calc
+      3 ^ (3 * η) % 64 = 3 ^ 13 % 64 :=
+        nat_pow_mod_eq_of_period (a := 3) (d := 16) (m := 64)
+          (by decide) hy16
+      _ = 19 := by norm_num
+  have h2x64 : 2 ^ x % 64 = 0 := by
+    apply Nat.mod_eq_zero_of_dvd
+    simpa using Nat.pow_dvd_pow 2 hx6
+  have hz3_mod64 : z ^ 3 % 64 = 24 := by
+    calc
+      z ^ 3 % 64 = (2 ^ x + 3 ^ (3 * η) + 5) % 64 := by rw [← hsol]
+      _ = 24 := by
+        rw [Nat.add_mod (2 ^ x + 3 ^ (3 * η)), Nat.add_mod (2 ^ x), h2x64, h3y64]
+  have hrem : (z % 64) ^ 3 % 64 = 24 := by
+    simpa [Nat.pow_mod] using hz3_mod64
+  have hr : z % 64 < 64 := Nat.mod_lt z (by norm_num)
+  generalize hz_r : z % 64 = r at hr hrem
+  rw [← Nat.mod_mod_of_dvd z (by norm_num : 8 ∣ 64), hz_r]
+  interval_cases r <;> (try rfl) <;> (revert hrem; norm_num)
+
 /-- Under the two congruence conditions used in the human-readable proof,
     every large solution satisfies `z ≡ 30 (mod 40)`. -/
 theorem z_mod_forty
@@ -37,60 +98,10 @@ theorem z_mod_forty
     (hy : y = 3 * η)
     (hsol : Solves x y z) :
     z % 40 = 30 := by
-  subst y
-  unfold Solves at hsol
-  have hy4 : (3 * η) % 4 = 1 := by omega
-  have hy16 : (3 * η) % 16 = 13 := by omega
-
-  have h2x5 : 2 ^ x % 5 = 2 := by
-    calc
-      2 ^ x % 5 = 2 ^ 1 % 5 :=
-        nat_pow_mod_eq_of_period (a := 2) (d := 4) (m := 5)
-          (by decide) hx4
-      _ = 2 := by norm_num
-
-  have h3y5 : 3 ^ (3 * η) % 5 = 3 := by
-    calc
-      3 ^ (3 * η) % 5 = 3 ^ 1 % 5 :=
-        nat_pow_mod_eq_of_period (a := 3) (d := 4) (m := 5)
-          (by decide) hy4
-      _ = 3 := by norm_num
-
-  have hz_mod5 : z ^ 3 % 5 = 0 := by
-    calc
-      z ^ 3 % 5 = (2 ^ x + 3 ^ (3 * η) + 5) % 5 := by rw [← hsol]
-      _ = 0 := by
-        rw [Nat.add_mod (2 ^ x + 3 ^ (3 * η)), Nat.add_mod (2 ^ x), h2x5, h3y5]
-
-  have hz_div5 : 5 ∣ z := by
-    have hcube : 5 ∣ z ^ 3 := Nat.dvd_of_mod_eq_zero hz_mod5
-    exact Nat.Prime.dvd_of_dvd_pow (by norm_num) hcube
-
-  have h3y64 : 3 ^ (3 * η) % 64 = 19 := by
-    calc
-      3 ^ (3 * η) % 64 = 3 ^ 13 % 64 :=
-        nat_pow_mod_eq_of_period (a := 3) (d := 16) (m := 64)
-          (by decide) hy16
-      _ = 19 := by norm_num
-
-  have h2x64 : 2 ^ x % 64 = 0 := by
-    apply Nat.mod_eq_zero_of_dvd
-    simpa using Nat.pow_dvd_pow 2 hx6
-
-  have hz3_mod64 : z ^ 3 % 64 = 24 := by
-    calc
-      z ^ 3 % 64 = (2 ^ x + 3 ^ (3 * η) + 5) % 64 := by rw [← hsol]
-      _ = 24 := by
-        rw [Nat.add_mod (2 ^ x + 3 ^ (3 * η)), Nat.add_mod (2 ^ x), h2x64, h3y64]
-
-  have hz_mod8 : z % 8 = 6 := by
-    have hrem : (z % 64) ^ 3 % 64 = 24 := by
-      simpa [Nat.pow_mod] using hz3_mod64
-    have hr : z % 64 < 64 := Nat.mod_lt z (by norm_num)
-    generalize hz_r : z % 64 = r at hr hrem
-    rw [← Nat.mod_mod_of_dvd z (by norm_num : 8 ∣ 64), hz_r]
-    interval_cases r <;> (try rfl) <;> (revert hrem; norm_num)
-
+  have hz_div5 : 5 ∣ z :=
+    five_dvd_z_of_congruences hx4 hy48 hy hsol
+  have hz_mod8 : z % 8 = 6 :=
+    z_mod_eight_of_congruences hx6 hy48 hy hsol
   have hz_rem : z % 40 < 40 := Nat.mod_lt z (by norm_num)
   generalize hz_r : z % 40 = r at hz_rem
   have hz5_r : r % 5 = 0 := by
