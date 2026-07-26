@@ -1,20 +1,101 @@
-# kuromine-proof-lean4
+# 黒峰方程式の Lean 4 による形式化
 
-A Lean 4 formalization of the simplified proof of the Kuromine equation
-
-```text
-2^x + 3^y + 5 = z^3.
-```
-
-The main theorem proves that the only integer solutions are
+このリポジトリでは、黒峰方程式
 
 ```text
-(x, y, z) = (1, 0, 2), (5, 3, 4).
+2^x + 3^y + 5 = z^3
 ```
 
-Integer exponents are interpreted as powers in `ℚ`.
+の整数解を完全に分類する証明を、Lean 4 と mathlib を用いて形式化しています。
 
-## Main theorem
+黒峰問題は、この方程式を満たす整数の組 `(x, y, z)` をすべて求める問題です。本リポジトリで証明される結論は、整数解が
+
+```text
+(x, y, z) = (1, 0, 2), (5, 3, 4)
+```
+
+の2組に限られるというものです。
+
+指数 `x`, `y` には負の整数も許すため、Lean 上では `2^x` と `3^y` を `ℚ` 上の整数冪として定義しています。
+
+## この形式化について
+
+本リポジトリは、人間向けに整理された黒峰問題の簡略化証明を、その流れが追える形で Lean に移したものです。単に最終結果を検証するだけでなく、
+
+- 整数指数の問題を自然数指数の問題へ帰着する部分
+- 小さい指数を直接分類する部分
+- 有限ふるいによって必要な合同条件を取り出す部分
+- 解自身から作った法とヤコビ記号によって残りを排除する部分
+
+を分けて形式化しています。
+
+有限ふるいについては、具体的な有限計算と、その計算が真の解を取りこぼさないことの証明を別々に記述しています。これにより、計算結果だけに依存せず、ふるい全体の数学的な正当性を Lean 上で確認できる構成になっています。
+
+## 証明の概要
+
+証明は大きく次の3段階に分かれます。
+
+### 1. 整数指数から自然数指数への帰着
+
+負の指数を仮定して分母を払うと、法 `2` または法 `3` で矛盾が生じます。したがって、任意の整数解について
+
+```text
+x ≥ 0,  y ≥ 0,  z > 0
+```
+
+が成り立ち、問題は自然数上の方程式へ帰着されます。
+
+### 2. 小さい指数の分類
+
+`x < 6` の場合、および `y < 3` の場合を直接調べ、
+
+```text
+(1, 0, 2), (5, 3, 4)
+```
+
+以外の解を排除します。
+
+### 3. 大きい指数の排除
+
+残る `x ≥ 6`, `y ≥ 3` の範囲では、8個の素数
+
+```text
+73, 13, 577, 97, 673, 337, 43, 1009
+```
+
+を順に用いる有限ふるいを行います。その結果、可能な指数の組は `(1008, 336)` を法とする3つの剰余類まで絞られ、特に
+
+```text
+x ≡ 1 (mod 4),  y ≡ 45 (mod 48)
+```
+
+が従います。
+
+ここで `y = 3η` と書き、
+
+```text
+A = z - 3^η
+```
+
+と置きます。方程式と上の合同条件から、
+
+```text
+A > 0,  A ≡ 3 (mod 40),  A ∣ 2^x + 5
+```
+
+が得られます。また `x` は奇数なので、最後の整除関係から `-10` は法 `A` で平方剰余になります。一方、`A ≡ 3 (mod 40)` からヤコビ記号は
+
+```text
+(-10 / A) = -1
+```
+
+となり、矛盾します。したがって、大きい指数をもつ解は存在しません。
+
+固定した法に対する合同条件だけでは残り得る候補も、解自身から定まる `A` に対する整除関係を使うことで排除されます。ここが証明の最後の要点です。
+
+## 主定理
+
+最終的な定理は `KuromineProof/Main.lean` にあります。
 
 ```lean
 theorem classify_integer_solutions
@@ -24,50 +105,59 @@ theorem classify_integer_solutions
     (x = 5 ∧ y = 3 ∧ z = 4)
 ```
 
-## Proof structure
+## ファイル構成
 
-1. Negative exponents are eliminated after clearing denominators, using reduction modulo `2` or `3`.
-2. The cases with small exponents are classified directly.
-3. An eight-stage finite sieve using the primes
-   `73, 13, 577, 97, 673, 337, 43, 1009`
-   leaves three residue classes modulo `(1008, 336)`.
-4. These classes imply
-   `x ≡ 1 (mod 4)` and `y ≡ 45 (mod 48)`.
-5. The remaining range is eliminated using
-   `A = z - 3^(y/3)` and the Jacobi symbol `(-10 / A)`.
+- `KuromineProof/SmallCases.lean`  
+  小さい指数の場合を分類します。
 
-The Lean modules follow the same high-level argument while keeping reusable
-computation and soundness proofs separate:
+- `KuromineProof/Sieve/Core.lean`  
+  有限ふるいで用いるデータ構造と計算を定義します。
 
-- `SmallCases` handles the direct classifications.
-- `Sieve.Core`, `Sieve.Soundness`, `Sieve.Initial`, and `Sieve.Certificate`
-  separate the finite-sieve computation from its mathematical justification.
-- `LargeCase` proves that the sieve congruences contradict the Jacobi-symbol
-  argument.
-- `NaturalClassification` combines the natural-number cases.
-- `Main` reduces integer solutions to the natural-number classification.
+- `KuromineProof/Sieve/Soundness.lean`  
+  各ふるい段階が真の解を取りこぼさないことを証明します。
 
-The closed finite sieve is checked by `native_decide`; its soundness is proved separately.
+- `KuromineProof/Sieve/Initial.lean`  
+  大きい解が最初の候補集合に含まれることを証明します。
 
-## Build
+- `KuromineProof/Sieve/Certificate.lean`  
+  8段階のふるいを実行し、最終的に残る3つの剰余類を確認します。
 
-The project uses Lean 4.30.0 and mathlib 4.30.0.
+- `KuromineProof/LargeCase.lean`  
+  ふるいから得られた合同条件とヤコビ記号を組み合わせ、大きい指数の場合を排除します。
+
+- `KuromineProof/NaturalClassification.lean`  
+  自然数指数の場合の分類をまとめます。
+
+- `KuromineProof/Main.lean`  
+  整数指数を自然数指数へ帰着し、整数解の完全分類を導きます。
+
+有限ふるいの閉じた計算
+
+```lean
+runPeriodicSieve initialClasses sieveStages = finalClasses
+```
+
+は `native_decide` によって確認しています。その一方で、ふるいの健全性は一般の定理として別途証明しています。
+
+## ビルド
+
+Lean 4.30.0 と mathlib 4.30.0 を使用しています。
 
 ```bash
 lake exe cache get
 lake build
 ```
 
-GitHub Actions runs the same proof verification on every push and pull request.
+GitHub Actions でも、push および pull request のたびに同じビルドを実行します。
 
-## References
+## 参考資料
 
-The simplified proof formalized here is described in:
+人間向けの証明は、次の記事で説明されています。
 
-- https://smooth-pudding.hatenablog.com/entry/2026/07/26/082029
+- [黒峰問題完全解決](https://smooth-pudding.hatenablog.com/entry/2026/07/26/082029)
 
-The earlier complete Lean formalization was used as a technical reference:
+また、以前に作成された次の完全形式化を、実装上の参考資料として使用しています。
 
-- https://github.com/nakashima-hikaru/kuromine-lean4
+- [nakashima-hikaru/kuromine-lean4](https://github.com/nakashima-hikaru/kuromine-lean4)
 
-Code adapted from that repository is used under the Apache License 2.0.
+同リポジトリをもとに改変したコードは、Apache License 2.0 に基づいて使用しています。
