@@ -12,9 +12,10 @@ theorem three_pow_lt_z_of_solution
   subst y
   unfold Solves at hsol
   have ht_cube : (3 ^ η) ^ 3 < z ^ 3 := by
+    have h2pos : 0 < 2 ^ x := by positivity
     calc
       (3 ^ η) ^ 3 = 3 ^ (3 * η) := by rw [← Nat.pow_mul, mul_comm]
-      _ < 2 ^ x + 3 ^ (3 * η) + 5 := by positivity
+      _ < 2 ^ x + 3 ^ (3 * η) + 5 := by omega
       _ = z ^ 3 := hsol
   exact lt_of_pow_lt_pow_left' 3 ht_cube
 
@@ -140,10 +141,17 @@ theorem A_dvd_two_pow_add_five
   have h_eq : z ^ 3 - (3 ^ η) ^ 3 = 2 ^ x + 5 := by
     have ht3 : (3 ^ η) ^ 3 = 3 ^ (3 * η) := by
       rw [← Nat.pow_mul, mul_comm]
-    calc
-      z ^ 3 - (3 ^ η) ^ 3 = z ^ 3 - 3 ^ (3 * η) := by rw [ht3]
-      _ = (2 ^ x + 3 ^ (3 * η) + 5) - 3 ^ (3 * η) := by rw [← hsol]
-      _ = 2 ^ x + 5 := by omega
+    have h1 :
+        z ^ 3 - (3 ^ η) ^ 3 =
+          (2 ^ x + 5 + 3 ^ (3 * η)) - 3 ^ (3 * η) := by
+      calc
+        z ^ 3 - (3 ^ η) ^ 3 = z ^ 3 - 3 ^ (3 * η) := by rw [ht3]
+        _ = (2 ^ x + 3 ^ (3 * η) + 5) - 3 ^ (3 * η) := by rw [← hsol]
+        _ = (2 ^ x + 5 + 3 ^ (3 * η)) - 3 ^ (3 * η) := by omega
+    have h2 :
+        (2 ^ x + 5 + 3 ^ (3 * η)) - 3 ^ (3 * η) = 2 ^ x + 5 :=
+      Nat.add_sub_cancel (2 ^ x + 5) (3 ^ (3 * η))
+    exact h1.trans h2
   have h_factor :
       (z : ℤ) ^ 3 - (3 ^ η : ℤ) ^ 3 =
         ((z : ℤ) - (3 ^ η : ℤ)) *
