@@ -2,7 +2,7 @@ import KuromineProof.SmallCases.Residues
 
 namespace KuromineProof
 
- theorem solution_x_eq_five {y z : ℕ} (h : Solves 5 y z) : y = 3 ∧ z = 4 := by
+theorem solution_x_eq_five {y z : ℕ} (h : Solves 5 y z) : y = 3 ∧ z = 4 := by
   unfold Solves at h
   by_cases hy0 : y = 0
   · subst y
@@ -121,10 +121,11 @@ namespace KuromineProof
               omega
             have hη2 : 2 ≤ η := by omega
             obtain ⟨k, hk⟩ : ∃ k, η = k + 2 := ⟨η - 2, by omega⟩
+            have hkpow_pos : 0 < 3 ^ k := by positivity
             have ht_ge9 : 9 ≤ t := by
               calc
                 9 = 1 * 9 := by norm_num
-                _ ≤ 3 ^ k * 9 := Nat.mul_le_mul_right 9 (by positivity)
+                _ ≤ 3 ^ k * 9 := Nat.mul_le_mul_right 9 (by omega)
                 _ = 3 ^ (k + 2) := by rw [pow_add]; norm_num
                 _ = t := by simp [t, hk]
             have hsucc_ge10 : 10 ≤ t + 1 := by omega
@@ -140,7 +141,7 @@ namespace KuromineProof
                 4 = 2 * 2 := by norm_num
                 _ ≤ z * z := Nat.mul_le_mul hz2 hz2
                 _ = z ^ 2 := by ring
-            dsimp [q] at hq1
+            have hzsq_le_q : z ^ 2 ≤ q := by simp [q]
             omega
 
 end KuromineProof
