@@ -13,13 +13,18 @@ def sieveStages : List PeriodicStage :=
     { prime := 43, xPeriod := 14, yPeriod := 42 },
     { prime := 1009, xPeriod := 504, yPeriod := 168 } ]
 
-set_option exponentiation.threshold 1000 in
+section SieveValidity
+
+set_option exponentiation.threshold 1000
+
 /-- Each concrete stage has the stated prime and exponent periods. -/
-lemma sieveStages_valid : ∀ s ∈ sieveStages, s.IsValid := by
+theorem sieveStages_valid : ∀ s ∈ sieveStages, s.IsValid := by
   intro s hs
   simp [sieveStages] at hs
   rcases hs with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
     constructor <;> norm_num
+
+end SieveValidity
 
 /-- The three residue classes left by the eight-stage certificate. -/
 def finalClasses : List SieveResidueClass :=
@@ -27,11 +32,18 @@ def finalClasses : List SieveResidueClass :=
     { xModulus := 1008, yModulus := 336, xResidue := 725, yResidue := 45 },
     { xModulus := 1008, yModulus := 336, xResidue := 5, yResidue := 333 } ]
 
-set_option maxRecDepth 1000000 maxHeartbeats 0 exponentiation.threshold 1000 in
+section SieveComputation
+
+set_option maxRecDepth 1000000
+set_option maxHeartbeats 0
+set_option exponentiation.threshold 1000
+
 /-- Closed finite computation of the simplified sieve. -/
-lemma sieve_computation :
+theorem sieve_computation :
     runPeriodicSieve initialClasses sieveStages = finalClasses := by
   native_decide
+
+end SieveComputation
 
 /-- Every large solution satisfies the two congruences needed by the Jacobi argument. -/
 theorem congruences_of_large_solution
