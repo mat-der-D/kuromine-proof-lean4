@@ -1,0 +1,16 @@
+name: Lean CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and verify proofs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Build Lean project with Mathlib cache
+        uses: leanprover/lean-action@v1
