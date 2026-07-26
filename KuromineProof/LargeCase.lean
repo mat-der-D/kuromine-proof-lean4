@@ -43,22 +43,18 @@ theorem z_mod_forty
   have hy16 : (3 * η) % 16 = 13 := by omega
 
   have h2x5 : 2 ^ x % 5 = 2 := by
-    have hperiod : (2 : ZMod 5) ^ 4 = 1 := by decide
-    have hpow : (2 : ZMod 5) ^ x = (2 : ZMod 5) := by
-      calc
-        (2 : ZMod 5) ^ x = (2 : ZMod 5) ^ (x % 4) :=
-          zmod_pow_mod_eq 2 4 5 hperiod x
-        _ = (2 : ZMod 5) := by rw [hx4]; decide
-    simpa using nat_pow_mod_eq_of_zmod_pow_eq hpow
+    calc
+      2 ^ x % 5 = 2 ^ 1 % 5 :=
+        nat_pow_mod_eq_of_period (a := 2) (d := 4) (m := 5)
+          (by decide) hx4
+      _ = 2 := by norm_num
 
   have h3y5 : 3 ^ (3 * η) % 5 = 3 := by
-    have hperiod : (3 : ZMod 5) ^ 4 = 1 := by decide
-    have hpow : (3 : ZMod 5) ^ (3 * η) = (3 : ZMod 5) := by
-      calc
-        (3 : ZMod 5) ^ (3 * η) = (3 : ZMod 5) ^ ((3 * η) % 4) :=
-          zmod_pow_mod_eq 3 4 5 hperiod (3 * η)
-        _ = (3 : ZMod 5) := by rw [hy4]; decide
-    simpa using nat_pow_mod_eq_of_zmod_pow_eq hpow
+    calc
+      3 ^ (3 * η) % 5 = 3 ^ 1 % 5 :=
+        nat_pow_mod_eq_of_period (a := 3) (d := 4) (m := 5)
+          (by decide) hy4
+      _ = 3 := by norm_num
 
   have hz_mod5 : z ^ 3 % 5 = 0 := by
     calc
@@ -71,13 +67,11 @@ theorem z_mod_forty
     exact Nat.Prime.dvd_of_dvd_pow (by norm_num) hcube
 
   have h3y64 : 3 ^ (3 * η) % 64 = 19 := by
-    have hperiod : (3 : ZMod 64) ^ 16 = 1 := by decide
-    have hpow : (3 : ZMod 64) ^ (3 * η) = (19 : ZMod 64) := by
-      calc
-        (3 : ZMod 64) ^ (3 * η) = (3 : ZMod 64) ^ ((3 * η) % 16) :=
-          zmod_pow_mod_eq 3 16 64 hperiod (3 * η)
-        _ = (19 : ZMod 64) := by rw [hy16]; decide
-    simpa using nat_pow_mod_eq_of_zmod_pow_eq hpow
+    calc
+      3 ^ (3 * η) % 64 = 3 ^ 13 % 64 :=
+        nat_pow_mod_eq_of_period (a := 3) (d := 16) (m := 64)
+          (by decide) hy16
+      _ = 19 := by norm_num
 
   have h2x64 : 2 ^ x % 64 = 0 := by
     apply Nat.mod_eq_zero_of_dvd
@@ -118,14 +112,12 @@ theorem A_mod_forty
     (z - 3 ^ η) % 40 = 3 := by
   have hz40 : z % 40 = 30 := z_mod_forty hx6 hx4 hy48 hy hsol
   have hη4 : η % 4 = 3 := eta_mod_four hy hy48
-  have hperiod : (3 : ZMod 40) ^ 4 = 1 := by decide
-  have hpow : (3 : ZMod 40) ^ η = (27 : ZMod 40) := by
-    calc
-      (3 : ZMod 40) ^ η = (3 : ZMod 40) ^ (η % 4) :=
-        zmod_pow_mod_eq 3 4 40 hperiod η
-      _ = (27 : ZMod 40) := by rw [hη4]; decide
   have ht40 : 3 ^ η % 40 = 27 := by
-    simpa using nat_pow_mod_eq_of_zmod_pow_eq hpow
+    calc
+      3 ^ η % 40 = 3 ^ 3 % 40 :=
+        nat_pow_mod_eq_of_period (a := 3) (d := 4) (m := 40)
+          (by decide) hη4
+      _ = 27 := by norm_num
   have htz : 3 ^ η < z := three_pow_lt_z_of_solution hy hsol
   omega
 

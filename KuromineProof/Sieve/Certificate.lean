@@ -51,18 +51,12 @@ theorem congruences_of_large_solution
   rcases hcov with ⟨r, hrmem, _hrwf, hrmatch⟩
   simp [finalClasses] at hrmem
   rcases hrmem with rfl | rfl | rfl <;> constructor
-  · rw [← Nat.mod_mod_of_dvd x (by norm_num : 4 ∣ 1008), hrmatch.1]
-    norm_num
-  · rw [← Nat.mod_mod_of_dvd y (by norm_num : 48 ∣ 336), hrmatch.2]
-    norm_num
-  · rw [← Nat.mod_mod_of_dvd x (by norm_num : 4 ∣ 1008), hrmatch.1]
-    norm_num
-  · rw [← Nat.mod_mod_of_dvd y (by norm_num : 48 ∣ 336), hrmatch.2]
-    norm_num
-  · rw [← Nat.mod_mod_of_dvd x (by norm_num : 4 ∣ 1008), hrmatch.1]
-    norm_num
-  · rw [← Nat.mod_mod_of_dvd y (by norm_num : 48 ∣ 336), hrmatch.2]
-    norm_num
+  · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 4 ∣ 1008) hrmatch.1).trans (by norm_num)
+  · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 48 ∣ 336) hrmatch.2).trans (by norm_num)
+  · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 4 ∣ 1008) hrmatch.1).trans (by norm_num)
+  · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 48 ∣ 336) hrmatch.2).trans (by norm_num)
+  · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 4 ∣ 1008) hrmatch.1).trans (by norm_num)
+  · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 48 ∣ 336) hrmatch.2).trans (by norm_num)
 
 /-- No solution exists in the remaining large-exponent range. -/
 theorem no_solution_large_exponents

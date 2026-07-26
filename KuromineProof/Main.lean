@@ -22,7 +22,7 @@ theorem classify_natural_solutions
   · exact classify_x_lt_six hx hsol
   · have hx6 : 6 ≤ x := by omega
     by_cases hy : 3 ≤ y
-    · exact (no_solution_large_exponents hx6 hy hsol).elim
+    · exact (no_large_solution hx6 hy hsol).elim
     · have hylt : y < 3 := by omega
       interval_cases y
       · exact (no_solution_y0_x_ge_2 (by omega) hsol).elim

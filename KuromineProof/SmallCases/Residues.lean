@@ -56,29 +56,25 @@ theorem cube_mod13_ne_seven (z : ℕ) : (z ^ 3) % 13 ≠ 7 := by
   generalize hz : z % 13 = r at hr ⊢
   interval_cases r <;> norm_num
 
+private theorem pow_mod_pow_eq_zero {a e n : ℕ} (h : e ≤ n) :
+    a ^ n % a ^ e = 0 :=
+  Nat.mod_eq_zero_of_dvd (Nat.pow_dvd_pow a h)
+
 theorem pow_two_mod4_zero {x : ℕ} (hx : 2 ≤ x) : 2 ^ x % 4 = 0 := by
-  obtain ⟨k, rfl⟩ : ∃ k, x = k + 2 := ⟨x - 2, by omega⟩
-  calc
-    2 ^ (k + 2) % 4 = (2 ^ k * 4) % 4 := by rw [pow_add]; norm_num
-    _ = 0 := Nat.mul_mod_left (2 ^ k) 4
+  change 2 ^ x % 2 ^ 2 = 0
+  exact pow_mod_pow_eq_zero hx
 
 theorem pow_two_mod8_zero {x : ℕ} (hx : 3 ≤ x) : 2 ^ x % 8 = 0 := by
-  obtain ⟨k, rfl⟩ : ∃ k, x = k + 3 := ⟨x - 3, by omega⟩
-  calc
-    2 ^ (k + 3) % 8 = (2 ^ k * 8) % 8 := by rw [pow_add]; norm_num
-    _ = 0 := Nat.mul_mod_left (2 ^ k) 8
+  change 2 ^ x % 2 ^ 3 = 0
+  exact pow_mod_pow_eq_zero hx
 
 theorem pow_three_mod9_zero {y : ℕ} (hy : 2 ≤ y) : 3 ^ y % 9 = 0 := by
-  obtain ⟨k, rfl⟩ : ∃ k, y = k + 2 := ⟨y - 2, by omega⟩
-  calc
-    3 ^ (k + 2) % 9 = (3 ^ k * 9) % 9 := by rw [pow_add]; norm_num
-    _ = 0 := Nat.mul_mod_left (3 ^ k) 9
+  change 3 ^ y % 3 ^ 2 = 0
+  exact pow_mod_pow_eq_zero hy
 
 theorem pow_three_mod27_zero {y : ℕ} (hy : 3 ≤ y) : 3 ^ y % 27 = 0 := by
-  obtain ⟨k, rfl⟩ : ∃ k, y = k + 3 := ⟨y - 3, by omega⟩
-  calc
-    3 ^ (k + 3) % 27 = (3 ^ k * 27) % 27 := by rw [pow_add]; norm_num
-    _ = 0 := Nat.mul_mod_left (3 ^ k) 27
+  change 3 ^ y % 3 ^ 3 = 0
+  exact pow_mod_pow_eq_zero hy
 
 theorem pow_two_mod7 (x : ℕ) :
     2 ^ x % 7 = 1 ∨ 2 ^ x % 7 = 2 ∨ 2 ^ x % 7 = 4 := by
