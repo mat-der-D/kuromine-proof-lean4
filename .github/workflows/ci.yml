@@ -23,11 +23,30 @@ jobs:
           test: false
           lint: false
 
-      - name: Upload Lake manifest
+      - name: Record Lean diagnostics
+        if: always()
+        env:
+          LEAN_OUTCOME: ${{ steps.lean.outcome }}
+          BUILD_STATUS: ${{ steps.lean.outputs.build-status }}
+        run: |
+          printf 'lean-outcome=%s\nbuild-status=%s\n' "$LEAN_OUTCOME" "$BUILD_STATUS" > lean-status.txt
+          printf '\nworktree:\n' >> lean-status.txt
+          git status --short >> lean-status.txt
+          printf '\nmanifest:\n' >> lean-status.txt
+          ls -l lake-manifest.json >> lean-status.txt 2>&1 || true
+          set +e
+          lake build > lean-rerun.log 2>&1
+          printf '\nrerun-exit=%s\n' "$?" >> lean-status.txt
+
+      - name: Upload Lean diagnostics
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: lake-manifest
-          path: lake-manifest.json
+          name: lean-diagnostics
+          path: |
+            lean-status.txt
+            lean-rerun.log
+            lake-manifest.json
 
       - name: Preserve Lean result
         if: steps.lean.outcome == 'failure'
