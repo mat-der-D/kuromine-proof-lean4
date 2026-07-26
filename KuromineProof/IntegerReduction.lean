@@ -19,7 +19,9 @@ private theorem no_both_exponents_negative
         (2 : ℤ) ^ (a + 1) * (3 : ℤ) ^ (b + 1) * z ^ 3 := by
     exact_mod_cast h
   have hmod := congrArg (fun n : ℤ => (n : ZMod 2)) hZ
-  norm_num [pow_succ] at hmod
+  have htwo : (2 : ZMod 2) = 0 := by decide
+  have hthree : (3 : ZMod 2) = 1 := by decide
+  simp [pow_succ, htwo, hthree] at hmod
 
 private theorem no_negative_y
     (x b : ℕ) (z : ℤ)
@@ -34,7 +36,8 @@ private theorem no_negative_y
         (3 : ℤ) ^ (b + 1) * z ^ 3 := by
     exact_mod_cast h
   have hmod := congrArg (fun n : ℤ => (n : ZMod 3)) hZ
-  norm_num [pow_succ] at hmod
+  have hthree : (3 : ZMod 3) = 0 := by decide
+  simp [pow_succ, hthree] at hmod
 
 private theorem no_negative_x
     (a y : ℕ) (z : ℤ)
@@ -49,7 +52,8 @@ private theorem no_negative_x
         (2 : ℤ) ^ (a + 1) * z ^ 3 := by
     exact_mod_cast h
   have hmod := congrArg (fun n : ℤ => (n : ZMod 2)) hZ
-  norm_num [pow_succ] at hmod
+  have htwo : (2 : ZMod 2) = 0 := by decide
+  simp [pow_succ, htwo] at hmod
 
 /-- Every integer solution has nonnegative exponents and positive `z`. -/
 theorem integer_solution_signs
