@@ -2,7 +2,7 @@ import KuromineProof.SmallCases.Residues
 
 namespace KuromineProof
 
- theorem solution_x_eq_zero {y z : ℕ} (h : Solves 0 y z) : False := by
+theorem no_solution_x_eq_zero {y z : ℕ} (h : Solves 0 y z) : False := by
   unfold Solves at h
   by_cases hy0 : y = 0
   · subst y
@@ -31,7 +31,7 @@ namespace KuromineProof
         rw [hleft] at hmod
         exact cube_mod27_ne_six z hmod.symm
 
- theorem solution_x_eq_one {y z : ℕ} (h : Solves 1 y z) : y = 0 ∧ z = 2 := by
+theorem classify_solution_x_eq_one {y z : ℕ} (h : Solves 1 y z) : y = 0 ∧ z = 2 := by
   unfold Solves at h
   by_cases hy0 : y = 0
   · subst y
@@ -56,7 +56,7 @@ namespace KuromineProof
       rw [hleft] at hmod
       exact cube_mod9_ne_seven z hmod.symm
 
- theorem solution_x_eq_two {y z : ℕ} (h : Solves 2 y z) : False := by
+theorem no_solution_x_eq_two {y z : ℕ} (h : Solves 2 y z) : False := by
   unfold Solves at h
   by_cases hy0 : y = 0
   · subst y
@@ -86,7 +86,7 @@ namespace KuromineProof
         rw [hleft] at hmod
         exact cube_mod27_ne_nine z hmod.symm
 
- theorem solution_x_eq_three {y z : ℕ} (h : Solves 3 y z) : False := by
+theorem no_solution_x_eq_three {y z : ℕ} (h : Solves 3 y z) : False := by
   unfold Solves at h
   by_cases hy0 : y = 0
   · subst y
@@ -110,7 +110,7 @@ namespace KuromineProof
       rw [hleft] at hmod
       exact cube_mod9_ne_four z hmod.symm
 
- theorem solution_x_eq_four {y z : ℕ} (h : Solves 4 y z) : False := by
+theorem no_solution_x_eq_four {y z : ℕ} (h : Solves 4 y z) : False := by
   unfold Solves at h
   by_cases hy0 : y = 0
   · subst y

@@ -1,40 +1,49 @@
-import KuromineProof.Sieve.Core
-import KuromineProof.LargeCase
+import KuromineProof.Sieve.Initial
 
 namespace KuromineProof
 
-set_option maxRecDepth 1000000
-set_option maxHeartbeats 0
-set_option exponentiation.threshold 1000
-
 /-- The eight prime stages used in the simplified human-readable proof. -/
 def sieveStages : List PeriodicStage :=
-  [⟨73, 9, 12⟩,
-   ⟨13, 12, 3⟩,
-   ⟨577, 144, 48⟩,
-   ⟨97, 48, 48⟩,
-   ⟨673, 48, 168⟩,
-   ⟨337, 21, 168⟩,
-   ⟨43, 14, 42⟩,
-   ⟨1009, 504, 168⟩]
+  [ { prime := 73, xPeriod := 9, yPeriod := 12 },
+    { prime := 13, xPeriod := 12, yPeriod := 3 },
+    { prime := 577, xPeriod := 144, yPeriod := 48 },
+    { prime := 97, xPeriod := 48, yPeriod := 48 },
+    { prime := 673, xPeriod := 48, yPeriod := 168 },
+    { prime := 337, xPeriod := 21, yPeriod := 168 },
+    { prime := 43, xPeriod := 14, yPeriod := 42 },
+    { prime := 1009, xPeriod := 504, yPeriod := 168 } ]
+
+section SieveValidity
+
+set_option exponentiation.threshold 1000
 
 /-- Each concrete stage has the stated prime and exponent periods. -/
 theorem sieveStages_valid : ∀ s ∈ sieveStages, s.IsValid := by
   intro s hs
   simp [sieveStages] at hs
   rcases hs with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
-    simp only [PeriodicStage.IsValid] <;> norm_num
+    constructor <;> norm_num
+
+end SieveValidity
 
 /-- The three residue classes left by the eight-stage certificate. -/
 def finalClasses : List SieveResidueClass :=
-  [⟨1008, 336, 5, 45⟩,
-   ⟨1008, 336, 725, 45⟩,
-   ⟨1008, 336, 5, 333⟩]
+  [ { xModulus := 1008, yModulus := 336, xResidue := 5, yResidue := 45 },
+    { xModulus := 1008, yModulus := 336, xResidue := 725, yResidue := 45 },
+    { xModulus := 1008, yModulus := 336, xResidue := 5, yResidue := 333 } ]
+
+section SieveComputation
+
+set_option maxRecDepth 1000000
+set_option maxHeartbeats 0
+set_option exponentiation.threshold 1000
 
 /-- Closed finite computation of the simplified sieve. -/
 theorem sieve_computation :
     runPeriodicSieve initialClasses sieveStages = finalClasses := by
   native_decide
+
+end SieveComputation
 
 /-- Every large solution satisfies the two congruences needed by the Jacobi argument. -/
 theorem congruences_of_large_solution
@@ -57,15 +66,5 @@ theorem congruences_of_large_solution
   · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 48 ∣ 336) hrmatch.2).trans (by norm_num)
   · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 4 ∣ 1008) hrmatch.1).trans (by norm_num)
   · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 48 ∣ 336) hrmatch.2).trans (by norm_num)
-
-/-- No solution exists in the remaining large-exponent range. -/
-theorem no_solution_large_exponents
-    {x y z : ℕ}
-    (hx6 : 6 ≤ x)
-    (hy3 : 3 ≤ y)
-    (hsol : Solves x y z) :
-    False := by
-  rcases congruences_of_large_solution hx6 hy3 hsol with ⟨hx4, hy48⟩
-  exact no_solution_of_congruences hx6 hx4 hy48 hsol
 
 end KuromineProof

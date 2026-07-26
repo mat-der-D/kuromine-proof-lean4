@@ -36,6 +36,17 @@ theorem classify_integer_solutions
 5. The remaining range is eliminated using
    `A = z - 3^(y/3)` and the Jacobi symbol `(-10 / A)`.
 
+The Lean modules follow the same high-level argument while keeping reusable
+computation and soundness proofs separate:
+
+- `SmallCases` handles the direct classifications.
+- `Sieve.Core`, `Sieve.Soundness`, `Sieve.Initial`, and `Sieve.Certificate`
+  separate the finite-sieve computation from its mathematical justification.
+- `LargeCase` proves that the sieve congruences contradict the Jacobi-symbol
+  argument.
+- `NaturalClassification` combines the natural-number cases.
+- `Main` reduces integer solutions to the natural-number classification.
+
 The closed finite sieve is checked by `native_decide`; its soundness is proved separately.
 
 ## Build
