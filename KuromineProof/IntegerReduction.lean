@@ -6,11 +6,25 @@ namespace KuromineProof
 def SolvesInteger (x y z : ℤ) : Prop :=
   (2 : ℚ) ^ x + (3 : ℚ) ^ y + 5 = (z : ℚ) ^ (3 : ℕ)
 
+example (a b : ℕ) (z : ℤ)
+    (h : SolvesInteger (Int.negSucc a) (Int.negSucc b) z) : False := by
+  unfold SolvesInteger at h
+  simp at h
+  field_simp at h
+  exact h
+
+example (x b : ℕ) (z : ℤ)
+    (h : SolvesInteger (Int.ofNat x) (Int.negSucc b) z) : False := by
+  unfold SolvesInteger at h
+  simp at h
+  field_simp at h
+  exact h
+
 example (a y : ℕ) (z : ℤ)
     (h : SolvesInteger (Int.negSucc a) (Int.ofNat y) z) : False := by
   unfold SolvesInteger at h
   simp at h
-  trace_state
-  sorry
+  field_simp at h
+  exact h
 
 end KuromineProof
