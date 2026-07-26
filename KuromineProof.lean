@@ -1,1 +1,1 @@
-import KuromineProof.IntegerReduction
+import KuromineProof.Main
