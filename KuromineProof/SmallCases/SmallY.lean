@@ -42,4 +42,31 @@ theorem no_solution_y2_x_ge_3 {x z : ℕ} (hx : 3 ≤ x) (h : Solves x 2 z) : Fa
   rw [hleft] at hmod
   exact cube_mod8_ne_six z hmod.symm
 
+/-- The only solution with `y < 3` is `(x,y,z) = (1,0,2)`. -/
+theorem classify_solution_y_lt_three
+    {x y z : ℕ}
+    (hy : y < 3)
+    (h : Solves x y z) :
+    x = 1 ∧ y = 0 ∧ z = 2 := by
+  interval_cases y
+  · have hx2 : x < 2 := by
+      by_contra hnot
+      exact no_solution_y0_x_ge_2 (by omega) h
+    interval_cases x
+    · unfold Solves at h
+      have hz_bound : z < 3 := lt_of_pow_lt_pow_left' 3 (by omega)
+      interval_cases z <;> omega
+    · unfold Solves at h
+      have hz_bound : z < 3 := lt_of_pow_lt_pow_left' 3 (by omega)
+      interval_cases z <;> omega
+  · exact (no_solution_y1 h).elim
+  · have hx3 : x < 3 := by
+      by_contra hnot
+      exact no_solution_y2_x_ge_3 (by omega) h
+    interval_cases x
+    all_goals
+      unfold Solves at h
+      have hz_bound : z < 3 := lt_of_pow_lt_pow_left' 3 (by omega)
+      interval_cases z <;> omega
+
 end KuromineProof
