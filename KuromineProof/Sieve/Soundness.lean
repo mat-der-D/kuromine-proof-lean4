@@ -67,8 +67,12 @@ theorem refineClass_covers
   · exact
       { xModulus_pos := hMx_pos
         yModulus_pos := hMy_pos
-        xResidue_lt := by simpa only [← hxr_eq] using hxr_lt
-        yResidue_lt := by simpa only [← hyr_eq] using hyr_lt }
+        xResidue_lt := by
+          dsimp [r']
+          simpa only [← hxr_eq] using hxr_lt
+        yResidue_lt := by
+          dsimp [r']
+          simpa only [← hyr_eq] using hyr_lt }
   · dsimp [SieveResidueClass.Matches, r']
     constructor
     · rw [← hxr_eq]
