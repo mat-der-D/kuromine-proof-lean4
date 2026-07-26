@@ -13,37 +13,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Lean project with Mathlib cache
-        id: lean
-        continue-on-error: true
+      - name: Install Lean
         uses: leanprover/lean-action@v1
         with:
           auto-config: false
-          build: true
+          build: false
           test: false
           lint: false
+          use-mathlib-cache: false
+          use-github-cache: false
 
-      - name: Record Lean diagnostics
-        if: always()
-        env:
-          LEAN_OUTCOME: ${{ steps.lean.outcome }}
-          BUILD_STATUS: ${{ steps.lean.outputs.build-status }}
-        run: |
-          printf 'lean-outcome=%s\nbuild-status=%s\n' "$LEAN_OUTCOME" "$BUILD_STATUS" > lean-status.txt
-          printf '\nworktree:\n' >> lean-status.txt
-          git status --short >> lean-status.txt
-          printf '\nmanifest:\n' >> lean-status.txt
-          ls -l lake-manifest.json >> lean-status.txt 2>&1 || true
+      - name: Resolve dependencies
+        run: lake update
 
-      - name: Upload Lean diagnostics
-        if: always()
+      - name: Download Mathlib cache
+        run: lake exe cache get
+
+      - name: Build and verify proofs
+        run: lake build
+
+      - name: Upload Lake manifest
         uses: actions/upload-artifact@v4
         with:
-          name: lean-diagnostics
-          path: |
-            lean-status.txt
-            lake-manifest.json
-
-      - name: Preserve Lean result
-        if: steps.lean.outcome == 'failure'
-        run: exit 1
+          name: lake-manifest
+          path: lake-manifest.json
