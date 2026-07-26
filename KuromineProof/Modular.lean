@@ -18,6 +18,19 @@ theorem nat_pow_mod_eq_of_zmod_pow_eq {a n r m : ℕ} [NeZero m]
   push_cast
   exact h
 
+/-- Cast a natural-number solution of the Kuromine equation into `ZMod m`. -/
+theorem zmod_equation_of_solution {m x y z : ℕ} [NeZero m]
+    (hsol : Solves x y z) :
+    (z : ZMod m) ^ 3 =
+      (2 : ZMod m) ^ x + (3 : ZMod m) ^ y + 5 := by
+  unfold Solves at hsol
+  have hcast :
+      ((z ^ 3 : ℕ) : ZMod m) =
+        ((2 ^ x + 3 ^ y + 5 : ℕ) : ZMod m) := by
+    rw [hsol]
+  push_cast at hcast
+  exact hcast
+
 /-- Reduce an exponent modulo any certified period. -/
 theorem zmod_pow_mod_eq (a d m : ℕ)
     (hperiod : (a : ZMod m) ^ d = 1) (n : ℕ) :
