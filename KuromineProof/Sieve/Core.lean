@@ -63,6 +63,30 @@ def SieveResidueClass.WellFormed (r : SieveResidueClass) : Prop :=
   0 < r.xModulus ∧ 0 < r.yModulus ∧
   r.xResidue < r.xModulus ∧ r.yResidue < r.yModulus
 
+/-- The `x`-modulus of a normalized residue class is positive. -/
+theorem SieveResidueClass.WellFormed.xModulus_pos
+    {r : SieveResidueClass} (h : r.WellFormed) :
+    0 < r.xModulus :=
+  h.1
+
+/-- The `y`-modulus of a normalized residue class is positive. -/
+theorem SieveResidueClass.WellFormed.yModulus_pos
+    {r : SieveResidueClass} (h : r.WellFormed) :
+    0 < r.yModulus :=
+  h.2.1
+
+/-- The `x`-residue lies in its normalized range. -/
+theorem SieveResidueClass.WellFormed.xResidue_lt
+    {r : SieveResidueClass} (h : r.WellFormed) :
+    r.xResidue < r.xModulus :=
+  h.2.2.1
+
+/-- The `y`-residue lies in its normalized range. -/
+theorem SieveResidueClass.WellFormed.yResidue_lt
+    {r : SieveResidueClass} (h : r.WellFormed) :
+    r.yResidue < r.yModulus :=
+  h.2.2.2
+
 /-- One prime sieve stage, with certified periods for powers of 2 and 3. -/
 structure PeriodicStage where
   prime : ℕ
@@ -76,6 +100,42 @@ def PeriodicStage.IsValid (s : PeriodicStage) : Prop :=
   0 < s.xPeriod ∧ 0 < s.yPeriod ∧
   2 ^ s.xPeriod % s.prime = 1 ∧
   3 ^ s.yPeriod % s.prime = 1
+
+/-- The modulus of a valid stage is prime. -/
+theorem PeriodicStage.IsValid.prime_prime
+    {s : PeriodicStage} (h : s.IsValid) :
+    Nat.Prime s.prime :=
+  h.1
+
+/-- The prime of a valid stage is greater than three. -/
+theorem PeriodicStage.IsValid.prime_gt_three
+    {s : PeriodicStage} (h : s.IsValid) :
+    3 < s.prime :=
+  h.2.1
+
+/-- The period for powers of two is positive. -/
+theorem PeriodicStage.IsValid.xPeriod_pos
+    {s : PeriodicStage} (h : s.IsValid) :
+    0 < s.xPeriod :=
+  h.2.2.1
+
+/-- The period for powers of three is positive. -/
+theorem PeriodicStage.IsValid.yPeriod_pos
+    {s : PeriodicStage} (h : s.IsValid) :
+    0 < s.yPeriod :=
+  h.2.2.2.1
+
+/-- The stated period for powers of two is valid. -/
+theorem PeriodicStage.IsValid.two_period
+    {s : PeriodicStage} (h : s.IsValid) :
+    2 ^ s.xPeriod % s.prime = 1 :=
+  h.2.2.2.2.1
+
+/-- The stated period for powers of three is valid. -/
+theorem PeriodicStage.IsValid.three_period
+    {s : PeriodicStage} (h : s.IsValid) :
+    3 ^ s.yPeriod % s.prime = 1 :=
+  h.2.2.2.2.2
 
 /-- Whether a refined residue class is locally compatible with a cube. -/
 def PeriodicStage.allows (s : PeriodicStage) (r : SieveResidueClass) : Bool :=
@@ -124,9 +184,9 @@ theorem refineClass_covers
   have hMy_dvd : r.yModulus ∣ My' := by
     dsimp [My']; exact Nat.dvd_lcm_left _ _
   have hMx_pos : 0 < Mx' := by
-    dsimp [Mx']; exact Nat.lcm_pos hr.1 hPx
+    dsimp [Mx']; exact Nat.lcm_pos hr.xModulus_pos hPx
   have hMy_pos : 0 < My' := by
-    dsimp [My']; exact Nat.lcm_pos hr.2.1 hPy
+    dsimp [My']; exact Nat.lcm_pos hr.yModulus_pos hPy
   have hxr_lt : xr < Mx' := by
     dsimp [xr]; exact Nat.mod_lt _ hMx_pos
   have hyr_lt : yr < My' := by
@@ -141,12 +201,12 @@ theorem refineClass_covers
     exact hmatch.2
   have hkx_lt : kx < Mx' / r.xModulus := by
     dsimp [kx]
-    rw [Nat.div_lt_iff_lt_mul hr.1]
+    rw [Nat.div_lt_iff_lt_mul hr.xModulus_pos]
     rw [Nat.div_mul_cancel hMx_dvd]
     exact hxr_lt
   have hky_lt : ky < My' / r.yModulus := by
     dsimp [ky]
-    rw [Nat.div_lt_iff_lt_mul hr.2.1]
+    rw [Nat.div_lt_iff_lt_mul hr.yModulus_pos]
     rw [Nat.div_mul_cancel hMy_dvd]
     exact hyr_lt
   have hxr_eq : xr = r.xResidue + kx * r.xModulus := by
@@ -164,7 +224,7 @@ theorem refineClass_covers
       yResidue := r.yResidue + ky * r.yModulus }
   refine ⟨r', ?_, ?_, ?_, ?_, ?_⟩
   · simp [refineClass, hPx.ne', hPy.ne', r', Mx', My', kx, ky,
-      hkx_lt, hky_lt, hr.1.ne', hr.2.1.ne']
+      hkx_lt, hky_lt, hr.xModulus_pos.ne', hr.yModulus_pos.ne']
   · dsimp [SieveResidueClass.WellFormed, r']
     exact ⟨hMx_pos, hMy_pos, by simpa only [← hxr_eq] using hxr_lt,
       by simpa only [← hyr_eq] using hyr_lt⟩
@@ -185,13 +245,14 @@ theorem PeriodicStage.allows_of_solution
     (hmatch : r.Matches x y)
     (hsol : Solves x y z) :
     s.allows r = true := by
-  rcases hs with ⟨hp, hp3, _hxp, _hyp, h2nat, h3nat⟩
+  have hp := hs.prime_prime
+  have hp3 := hs.prime_gt_three
   letI : NeZero s.prime := ⟨hp.ne_zero⟩
   have hp1 : 1 < s.prime := by omega
   have h2 : (2 : ZMod s.prime) ^ s.xPeriod = 1 :=
-    zmod_pow_eq_one_of_nat_mod_eq_one hp1 h2nat
+    zmod_pow_eq_one_of_nat_mod_eq_one hp1 hs.two_period
   have h3 : (3 : ZMod s.prime) ^ s.yPeriod = 1 :=
-    zmod_pow_eq_one_of_nat_mod_eq_one hp1 h3nat
+    zmod_pow_eq_one_of_nat_mod_eq_one hp1 hs.three_period
   have hxrem : x % s.xPeriod = r.xResidue % s.xPeriod := by
     calc
       x % s.xPeriod = (x % r.xModulus) % s.xPeriod :=
@@ -214,18 +275,8 @@ theorem PeriodicStage.allows_of_solution
       isCubeModB s.prime
         (2 ^ (x % s.xPeriod) + 3 ^ (y % s.yPeriod) + 5) = true := by
     apply isCubeModB_eq_true_of_zmod (z := (z : ZMod s.prime))
-    have hzmod :
-        (z : ZMod s.prime) ^ 3 =
-          (2 : ZMod s.prime) ^ x +
-          (3 : ZMod s.prime) ^ y + 5 := by
-      unfold Solves at hsol
-      have hsol_cast :
-          ((z ^ 3 : ℕ) : ZMod s.prime) =
-            ((2 ^ x + 3 ^ y + 5 : ℕ) : ZMod s.prime) := by
-        rw [hsol]
-      push_cast at hsol_cast
-      exact hsol_cast
-    simpa [h2reduce, h3reduce] using hzmod
+    simpa [h2reduce, h3reduce] using
+      (zmod_equation_of_solution (m := s.prime) hsol)
   rw [hxrem, hyrem] at hcube
   simp [PeriodicStage.allows, hp.pos, hcube]
 
@@ -237,7 +288,7 @@ theorem applyPeriodicStage_sound
     (hcov : CoveredBy rs x y) :
     CoveredBy (applyPeriodicStage rs s) x y := by
   rcases hcov with ⟨r, hrmem, hrwf, hrmatch⟩
-  rcases refineClass_covers hrwf hs.2.2.1 hs.2.2.2.1 hrmatch with
+  rcases refineClass_covers hrwf hs.xPeriod_pos hs.yPeriod_pos hrmatch with
     ⟨r', hr'mem, hr'wf, hr'match, hr'xmod, hr'ymod⟩
   have hxdiv : s.xPeriod ∣ r'.xModulus := by
     rw [hr'xmod]; exact Nat.dvd_lcm_right _ _
@@ -304,16 +355,8 @@ theorem initialClasses_cover
     have h2reduce : (2 : ZMod 9) ^ x = (2 : ZMod 9) ^ rx.val := by
       dsimp [rx]
       exact zmod_pow_mod_eq 2 6 9 h2period x
-    have hzmod :
-        (z : ZMod 9) ^ 3 = (2 : ZMod 9) ^ x + (3 : ZMod 9) ^ y + 5 := by
-      unfold Solves at hsol
-      have hsol_cast :
-          ((z ^ 3 : ℕ) : ZMod 9) =
-            ((2 ^ x + 3 ^ y + 5 : ℕ) : ZMod 9) := by
-        rw [hsol]
-      push_cast at hsol_cast
-      exact hsol_cast
-    simpa [h2reduce, h3zero] using hzmod
+    simpa [h2reduce, h3zero] using
+      (zmod_equation_of_solution (m := 9) hsol)
   have h64 : isCubeModB 64 (3 ^ ry.val + 5) = true := by
     apply isCubeModB_eq_true_of_zmod (z := (z : ZMod 64))
     have h2zero : (2 : ZMod 64) ^ x = 0 := by
@@ -325,16 +368,8 @@ theorem initialClasses_cover
     have h3reduce : (3 : ZMod 64) ^ y = (3 : ZMod 64) ^ ry.val := by
       dsimp [ry]
       exact zmod_pow_mod_eq 3 16 64 h3period y
-    have hzmod :
-        (z : ZMod 64) ^ 3 = (2 : ZMod 64) ^ x + (3 : ZMod 64) ^ y + 5 := by
-      unfold Solves at hsol
-      have hsol_cast :
-          ((z ^ 3 : ℕ) : ZMod 64) =
-            ((2 ^ x + 3 ^ y + 5 : ℕ) : ZMod 64) := by
-        rw [hsol]
-      push_cast at hsol_cast
-      exact hsol_cast
-    simpa [h2zero, h3reduce] using hzmod
+    simpa [h2zero, h3reduce] using
+      (zmod_equation_of_solution (m := 64) hsol)
   have hpair : (rx.val, ry.val) ∈ initialPairs :=
     initialPairs_complete rx ry h9 h64
   let r : SieveResidueClass :=
