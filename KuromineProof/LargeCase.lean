@@ -195,7 +195,9 @@ theorem neg_ten_isSquare_of_odd
     calc
       ((2 : ZMod A) ^ (k + 1)) ^ 2 = (2 : ZMod A) ^ ((k + 1) * 2) := by
         rw [← pow_mul]
-      _ = (2 : ZMod A) ^ (1 + (2 * k + 1)) := by congr 1 <;> omega
+      _ = (2 : ZMod A) ^ (1 + (2 * k + 1)) := by
+        congr 1
+        omega
       _ = (2 : ZMod A) * (2 : ZMod A) ^ (2 * k + 1) := by
         rw [pow_add, pow_one]
   rw [hsq, hbase]
