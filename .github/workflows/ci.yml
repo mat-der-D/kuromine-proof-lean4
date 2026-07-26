@@ -32,7 +32,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lean-build-log
-          path: lean-build.log
+          path: |
+            lean-build.log
+            KuromineProof/SmallCases.lean
 
       - name: Preserve Lean result
         if: steps.lean.outcome == 'failure'
