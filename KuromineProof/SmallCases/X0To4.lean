@@ -16,7 +16,8 @@ theorem no_solution_x_lt_five_y_ge_three
     rcases cube_mod9_cases z with hz | hz | hz <;>
       rw [hz] at hmod9 <;>
       interval_cases x <;>
-      norm_num [Nat.add_mod, pow_three_mod9_zero (by omega : 2 ≤ y)] at hmod9 ⊢
+      norm_num [Nat.add_mod, pow_three_mod9_zero (by omega : 2 ≤ y)] at hmod9 <;>
+      omega
   subst x
   have hmod27 : (2 ^ 2 + 3 ^ y + 5) % 27 = (z ^ 3) % 27 :=
     congrArg (fun n : ℕ => n % 27) h
