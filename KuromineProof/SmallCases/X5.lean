@@ -4,14 +4,9 @@ namespace KuromineProof
 
 private theorem pow_three_mod4_of_even {y : ℕ} (hy : y % 2 = 0) :
     3 ^ y % 4 = 1 := by
-  have hdiv : y = 2 * (y / 2) := by
-    have h := (Nat.div_add_mod y 2).symm
-    omega
-  have hp := congrArg (fun n : ℕ => 3 ^ n % 4) hdiv
   calc
-    3 ^ y % 4 = 3 ^ (2 * (y / 2)) % 4 := hp
-    _ = (3 ^ 2) ^ (y / 2) % 4 := by rw [pow_mul]
-    _ = ((3 ^ 2 % 4) ^ (y / 2)) % 4 := Nat.pow_mod _ _ _
+    3 ^ y % 4 = 3 ^ 0 % 4 :=
+      nat_pow_mod_eq_of_period (a := 3) (d := 2) (m := 4) (by decide) hy
     _ = 1 := by norm_num
 
 private theorem y_mod_six_eq_three_of_solution_x_eq_five
