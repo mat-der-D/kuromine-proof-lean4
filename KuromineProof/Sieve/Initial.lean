@@ -13,7 +13,7 @@ def initialClasses : List SieveResidueClass :=
     { xModulus := 6, yModulus := 16, xResidue := q.1, yResidue := q.2 }
 
 /-- Finite verification of the ten initial residue pairs. -/
-theorem initialPairs_complete :
+private theorem initialPairs_complete :
     ∀ rx : Fin 6, ∀ ry : Fin 16,
       isCubeModB 9 (2 ^ rx.val + 5) = true →
       isCubeModB 64 (3 ^ ry.val + 5) = true →
