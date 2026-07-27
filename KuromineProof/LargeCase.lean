@@ -4,7 +4,7 @@ import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 namespace KuromineProof
 
 /-- If `y = 3η`, every solution satisfies `3^η < z`. -/
-theorem three_pow_lt_z_of_solution
+private theorem three_pow_lt_z_of_solution
     {x y z η : ℕ}
     (hy : y = 3 * η)
     (hsol : Solves x y z) :
@@ -20,7 +20,7 @@ theorem three_pow_lt_z_of_solution
   exact lt_of_pow_lt_pow_left' 3 ht_cube
 
 /-- From `y ≡ 45 (mod 48)` and `y = 3η`, obtain `η ≡ 3 (mod 4)`. -/
-theorem eta_mod_four
+private theorem eta_mod_four
     {y η : ℕ}
     (hy : y = 3 * η)
     (hy48 : y % 48 = 45) :
@@ -90,7 +90,7 @@ private theorem z_mod_eight_of_congruences
 
 /-- Under the two congruence conditions used in the human-readable proof,
     every large solution satisfies `z ≡ 30 (mod 40)`. -/
-theorem z_mod_forty
+private theorem z_mod_forty
     {x y z η : ℕ}
     (hx6 : 6 ≤ x)
     (hx4 : x % 4 = 1)
@@ -113,7 +113,7 @@ theorem z_mod_forty
   interval_cases r <;> revert hz5_r hz8_r <;> norm_num
 
 /-- For `A = z - 3^η`, the congruence conditions imply `A ≡ 3 (mod 40)`. -/
-theorem A_mod_forty
+private theorem A_mod_forty
     {x y z η : ℕ}
     (hx6 : 6 ≤ x)
     (hx4 : x % 4 = 1)
@@ -133,7 +133,7 @@ theorem A_mod_forty
   omega
 
 /-- The factor `A = z - 3^η` divides `2^x + 5`. -/
-theorem A_dvd_two_pow_add_five
+private theorem A_dvd_two_pow_add_five
     {x y z η : ℕ}
     (hy : y = 3 * η)
     (hsol : Solves x y z) :
@@ -173,7 +173,7 @@ theorem A_dvd_two_pow_add_five
   exact ⟨z ^ 2 + z * 3 ^ η + (3 ^ η) ^ 2, h_prod.symm⟩
 
 /-- If `x` is odd and `A ∣ 2^x + 5`, then `-10` is a square modulo `A`. -/
-theorem neg_ten_isSquare_of_odd
+private theorem neg_ten_isSquare_of_odd
     {A x : ℕ}
     (hx : Odd x)
     (hdiv : A ∣ 2 ^ x + 5) :
@@ -203,7 +203,7 @@ theorem neg_ten_isSquare_of_odd
   norm_num
 
 /-- The Jacobi symbol `(-10 / A)` is `-1` whenever `A ≡ 3 (mod 40)`. -/
-theorem jacobi_neg_ten_eq_neg_one
+private theorem jacobi_neg_ten_eq_neg_one
     {A : ℕ}
     (hAmod40 : A % 40 = 3) :
     jacobiSym (-10) A = -1 := by
