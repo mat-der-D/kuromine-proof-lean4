@@ -1,4 +1,4 @@
-import KuromineProof.Basic
+import KuromineProof.Modular
 
 namespace KuromineProof
 
@@ -45,25 +45,25 @@ theorem pow_three_mod27_zero {y : ℕ} (hy : 3 ≤ y) : 3 ^ y % 27 = 0 := by
 
 theorem pow_two_mod7 (x : ℕ) :
     2 ^ x % 7 = 1 ∨ 2 ^ x % 7 = 2 ∨ 2 ^ x % 7 = 4 := by
-  induction x with
-  | zero => left; rfl
-  | succ x ih =>
-      rcases ih with h1 | h2 | h4
-      · right; left
-        calc
-          2 ^ (x + 1) % 7 = (2 ^ x * 2) % 7 := by rfl
-          _ = (2 ^ x % 7 * 2) % 7 := Nat.mul_mod _ _ _
-          _ = 2 := by simp [h1]
-      · right; right
-        calc
-          2 ^ (x + 1) % 7 = (2 ^ x * 2) % 7 := by rfl
-          _ = (2 ^ x % 7 * 2) % 7 := Nat.mul_mod _ _ _
-          _ = 4 := by simp [h2]
-      · left
-        calc
-          2 ^ (x + 1) % 7 = (2 ^ x * 2) % 7 := by rfl
-          _ = (2 ^ x % 7 * 2) % 7 := Nat.mul_mod _ _ _
-          _ = 1 := by simp [h4]
+  have hxmod : x % 3 = 0 ∨ x % 3 = 1 ∨ x % 3 = 2 := by
+    have hlt : x % 3 < 3 := Nat.mod_lt x (by norm_num)
+    omega
+  rcases hxmod with hx | hx | hx
+  · left
+    calc
+      2 ^ x % 7 = 2 ^ 0 % 7 :=
+        nat_pow_mod_eq_of_period (a := 2) (d := 3) (m := 7) (by decide) hx
+      _ = 1 := by norm_num
+  · right; left
+    calc
+      2 ^ x % 7 = 2 ^ 1 % 7 :=
+        nat_pow_mod_eq_of_period (a := 2) (d := 3) (m := 7) (by decide) hx
+      _ = 2 := by norm_num
+  · right; right
+    calc
+      2 ^ x % 7 = 2 ^ 2 % 7 :=
+        nat_pow_mod_eq_of_period (a := 2) (d := 3) (m := 7) (by decide) hx
+      _ = 4 := by norm_num
 
 theorem cube_mod7_cases (z : ℕ) :
     (z ^ 3) % 7 = 0 ∨ (z ^ 3) % 7 = 1 ∨ (z ^ 3) % 7 = 6 := by
@@ -74,26 +74,16 @@ theorem cube_mod7_cases (z : ℕ) :
 
 theorem pow_three_mod7_of_mod6_eq_one {y : ℕ} (hy : y % 6 = 1) :
     3 ^ y % 7 = 3 := by
-  have hdiv : y = 6 * (y / 6) + 1 := by
-    have h := (Nat.div_add_mod y 6).symm
-    omega
-  have hp := congrArg (fun n : ℕ => 3 ^ n % 7) hdiv
   calc
-    3 ^ y % 7 = 3 ^ (6 * (y / 6) + 1) % 7 := hp
-    _ = ((3 ^ 6) ^ (y / 6) * 3) % 7 := by rw [pow_add, pow_mul]; norm_num
-    _ = (((3 ^ 6) ^ (y / 6) % 7) * (3 % 7)) % 7 := Nat.mul_mod _ _ _
-    _ = 3 := by rw [Nat.pow_mod]; norm_num
+    3 ^ y % 7 = 3 ^ 1 % 7 :=
+      nat_pow_mod_eq_of_period (a := 3) (d := 6) (m := 7) (by decide) hy
+    _ = 3 := by norm_num
 
 theorem pow_three_mod13_of_mod6_eq_five {y : ℕ} (hy : y % 6 = 5) :
     3 ^ y % 13 = 9 := by
-  have hdiv : y = 6 * (y / 6) + 5 := by
-    have h := (Nat.div_add_mod y 6).symm
-    omega
-  have hp := congrArg (fun n : ℕ => 3 ^ n % 13) hdiv
   calc
-    3 ^ y % 13 = 3 ^ (6 * (y / 6) + 5) % 13 := hp
-    _ = ((3 ^ 6) ^ (y / 6) * 3 ^ 5) % 13 := by rw [pow_add, pow_mul]
-    _ = (((3 ^ 6) ^ (y / 6) % 13) * (3 ^ 5 % 13)) % 13 := Nat.mul_mod _ _ _
-    _ = 9 := by rw [Nat.pow_mod]; norm_num
+    3 ^ y % 13 = 3 ^ 5 % 13 :=
+      nat_pow_mod_eq_of_period (a := 3) (d := 6) (m := 13) (by decide) hy
+    _ = 9 := by norm_num
 
 end KuromineProof
