@@ -32,6 +32,13 @@ theorem cube_mod9_ne_seven (z : ℕ) : (z ^ 3) % 9 ≠ 7 := by
   generalize hz : z % 9 = r at hr ⊢
   interval_cases r <;> norm_num
 
+theorem cube_mod9_cases (z : ℕ) :
+    (z ^ 3) % 9 = 0 ∨ (z ^ 3) % 9 = 1 ∨ (z ^ 3) % 9 = 8 := by
+  rw [Nat.pow_mod z 3 9]
+  have hr : z % 9 < 9 := Nat.mod_lt z (by norm_num)
+  generalize hz : z % 9 = r at hr ⊢
+  interval_cases r <;> norm_num
+
 theorem cube_mod27_ne_six (z : ℕ) : (z ^ 3) % 27 ≠ 6 := by
   rw [Nat.pow_mod z 3 27]
   have hr : z % 27 < 27 := Nat.mod_lt z (by norm_num)

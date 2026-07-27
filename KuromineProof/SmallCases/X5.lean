@@ -2,26 +2,38 @@ import KuromineProof.SmallCases.Residues
 
 namespace KuromineProof
 
+private theorem pow_three_mod4_of_even {y : ℕ} (hy : y % 2 = 0) :
+    3 ^ y % 4 = 1 := by
+  have hdiv : y = 2 * (y / 2) := by
+    have h := (Nat.div_add_mod y 2).symm
+    omega
+  have hp := congrArg (fun n : ℕ => 3 ^ n % 4) hdiv
+  calc
+    3 ^ y % 4 = 3 ^ (2 * (y / 2)) % 4 := hp
+    _ = (3 ^ 2) ^ (y / 2) % 4 := by rw [pow_mul]
+    _ = ((3 ^ 2 % 4) ^ (y / 2)) % 4 := Nat.pow_mod _ _ _
+    _ = 1 := by norm_num
+
 private theorem y_mod_six_eq_three_of_solution_x_eq_five
     {y z : ℕ}
     (h : Solves 5 y z) :
     y % 6 = 3 := by
   unfold Solves at h
-  have hmod8 : (2 ^ 5 + 3 ^ y + 5) % 8 = (z ^ 3) % 8 :=
-    congrArg (fun n : ℕ => n % 8) h
+  have hmod4 : (2 ^ 5 + 3 ^ y + 5) % 4 = (z ^ 3) % 4 :=
+    congrArg (fun n : ℕ => n % 4) h
   have hy_odd : y % 2 = 1 := by
     have hy_mod_lt : y % 2 < 2 := Nat.mod_lt y (by norm_num)
     by_contra hne
     have hy_even : y % 2 = 0 := by omega
-    have hleft : (2 ^ 5 + 3 ^ y + 5) % 8 = 6 := by
+    have hleft : (2 ^ 5 + 3 ^ y + 5) % 4 = 2 := by
       calc
-        (2 ^ 5 + 3 ^ y + 5) % 8 = (3 ^ y + 37) % 8 := by
-          apply congrArg (fun n : ℕ => n % 8)
+        (2 ^ 5 + 3 ^ y + 5) % 4 = (3 ^ y + 37) % 4 := by
+          apply congrArg (fun n : ℕ => n % 4)
           omega
-        _ = (3 ^ y % 8 + 37 % 8) % 8 := Nat.add_mod _ _ _
-        _ = 6 := by simp [pow_three_mod8_of_even hy_even]
-    rw [hleft] at hmod8
-    exact cube_mod8_ne_six z hmod8.symm
+        _ = (3 ^ y % 4 + 37 % 4) % 4 := Nat.add_mod _ _ _
+        _ = 2 := by simp [pow_three_mod4_of_even hy_even]
+    rw [hleft] at hmod4
+    exact cube_mod4_ne_two z hmod4.symm
   have hy6_ne1 : y % 6 ≠ 1 := by
     intro hy6
     have hmod7 : (2 ^ 5 + 3 ^ y + 5) % 7 = (z ^ 3) % 7 :=
@@ -54,11 +66,11 @@ private theorem y_mod_six_eq_three_of_solution_x_eq_five
     exact hy_odd
   omega
 
-private theorem no_solution_x_eq_five_y_ge_four
+/-- The only solution with `x = 5` is `(y,z) = (3,4)`. -/
+theorem classify_solution_x_eq_five
     {y z : ℕ}
-    (hy4 : 4 ≤ y)
     (h : Solves 5 y z) :
-    False := by
+    y = 3 ∧ z = 4 := by
   have hy6_eq3 : y % 6 = 3 :=
     y_mod_six_eq_three_of_solution_x_eq_five h
   have hy_div3 : 3 ∣ y := by
@@ -111,18 +123,23 @@ private theorem no_solution_x_eq_five_y_ge_four
           _ = q := by simp [q, hz_eq_t1]
           _ = 37 := hq37
       omega
-    have hη2 : 2 ≤ η := by omega
-    obtain ⟨k, hk⟩ : ∃ k, η = k + 2 := ⟨η - 2, by omega⟩
-    have hkpow_pos : 0 < 3 ^ k := by positivity
-    have ht_ge9 : 9 ≤ t := by
-      calc
-        9 = 1 * 9 := by norm_num
-        _ ≤ 3 ^ k * 9 := Nat.mul_le_mul_right 9 (by omega)
-        _ = 3 ^ (k + 2) := by rw [pow_add]; norm_num
-        _ = t := by simp [t, hk]
-    have hsucc_ge10 : 10 ≤ t + 1 := by omega
-    have hprod_ge90 : 90 ≤ t * (t + 1) :=
-      Nat.mul_le_mul ht_ge9 hsucc_ge10
+    have ht_lt_four : t < 4 := by
+      nlinarith [hprod12]
+    have ht_eq_three : t = 3 := by
+      interval_cases t <;> norm_num at hprod12 <;> omega
+    have hη1 : η = 1 := by
+      by_cases hη0 : η = 0
+      · subst η
+        norm_num [t] at ht_eq_three
+      by_cases hη1 : η = 1
+      · exact hη1
+      · have hη2 : 2 ≤ η := by omega
+        obtain ⟨k, hk⟩ : ∃ k, η = k + 2 := ⟨η - 2, by omega⟩
+        have hkpow_pos : 0 < 3 ^ k := by positivity
+        dsimp [t] at ht_eq_three
+        rw [hk, pow_add] at ht_eq_three
+        norm_num at ht_eq_three
+        omega
     omega
   · have hprod37 : 37 * q = 37 := by
       calc
@@ -143,36 +160,5 @@ private theorem no_solution_x_eq_five_y_ge_four
         z ^ 2 ≤ z ^ 2 + z * t := Nat.le_add_right _ _
         _ ≤ z ^ 2 + z * t + t ^ 2 := Nat.le_add_right _ _
     omega
-
-/-- The only solution with `x = 5` is `(y,z) = (3,4)`. -/
-theorem classify_solution_x_eq_five
-    {y z : ℕ}
-    (h : Solves 5 y z) :
-    y = 3 ∧ z = 4 := by
-  unfold Solves at h
-  by_cases hy0 : y = 0
-  · subst y
-    have hz : z ^ 3 = 38 := by omega
-    have hz_bound : z < 4 := lt_of_pow_lt_pow_left' 3 (by omega)
-    interval_cases z <;> omega
-  · by_cases hy1 : y = 1
-    · subst y
-      have hz : z ^ 3 = 40 := by omega
-      have hz_bound : z < 4 := lt_of_pow_lt_pow_left' 3 (by omega)
-      interval_cases z <;> omega
-    · by_cases hy2 : y = 2
-      · subst y
-        have hz : z ^ 3 = 46 := by omega
-        have hz_bound : z < 4 := lt_of_pow_lt_pow_left' 3 (by omega)
-        interval_cases z <;> omega
-      · by_cases hy3 : y = 3
-        · subst y
-          have hz : z ^ 3 = 64 := by omega
-          have hz_bound : z < 5 := lt_of_pow_lt_pow_left' 3 (by omega)
-          interval_cases z <;> omega
-        · exfalso
-          have hy4 : 4 ≤ y := by omega
-          apply no_solution_x_eq_five_y_ge_four hy4
-          exact h
 
 end KuromineProof
