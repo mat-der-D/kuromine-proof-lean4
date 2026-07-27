@@ -137,12 +137,7 @@ theorem classify_integer_solutions
     (x = 5 ∧ y = 3 ∧ z = 4) := by
   rcases integer_solution_reduces h with
     ⟨nx, ny, nz, rfl, rfl, rfl, hnat⟩
-  rcases classify_natural_solutions hnat with h1 | h2
-  · left
-    rcases h1 with ⟨rfl, rfl, rfl⟩
-    norm_num
-  · right
-    rcases h2 with ⟨rfl, rfl, rfl⟩
-    norm_num
+  rcases classify_natural_solutions hnat with
+    ⟨rfl, rfl, rfl⟩ | ⟨rfl, rfl, rfl⟩ <;> norm_num
 
 end KuromineProof
