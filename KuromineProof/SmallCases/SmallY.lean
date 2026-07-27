@@ -3,7 +3,7 @@ import KuromineProof.SmallCases.Residues
 namespace KuromineProof
 
 /-- The case `y = 0` has no solutions once `x ≥ 2`. -/
-theorem no_solution_y0_x_ge_2 {x z : ℕ} (hx : 2 ≤ x) (h : Solves x 0 z) : False := by
+private theorem no_solution_y0_x_ge_2 {x z : ℕ} (hx : 2 ≤ x) (h : Solves x 0 z) : False := by
   unfold Solves at h
   have hmod : (2 ^ x + 3 ^ 0 + 5) % 4 = (z ^ 3) % 4 :=
     congrArg (fun n : ℕ => n % 4) h
@@ -16,7 +16,7 @@ theorem no_solution_y0_x_ge_2 {x z : ℕ} (hx : 2 ≤ x) (h : Solves x 0 z) : Fa
   exact cube_mod4_ne_two z hmod.symm
 
 /-- The case `y = 1` has no solutions. -/
-theorem no_solution_y1 {x z : ℕ} (h : Solves x 1 z) : False := by
+private theorem no_solution_y1 {x z : ℕ} (h : Solves x 1 z) : False := by
   unfold Solves at h
   have hmod : (2 ^ x + 3 ^ 1 + 5) % 7 = (z ^ 3) % 7 :=
     congrArg (fun n : ℕ => n % 7) h
@@ -30,7 +30,7 @@ theorem no_solution_y1 {x z : ℕ} (h : Solves x 1 z) : False := by
     rcases cube_mod7_cases z with h3 | h3 | h3 <;> omega
 
 /-- The case `y = 2` has no solutions once `x ≥ 2`. -/
-theorem no_solution_y2_x_ge_2 {x z : ℕ} (hx : 2 ≤ x) (h : Solves x 2 z) : False := by
+private theorem no_solution_y2_x_ge_2 {x z : ℕ} (hx : 2 ≤ x) (h : Solves x 2 z) : False := by
   unfold Solves at h
   have hmod : (2 ^ x + 3 ^ 2 + 5) % 4 = (z ^ 3) % 4 :=
     congrArg (fun n : ℕ => n % 4) h
