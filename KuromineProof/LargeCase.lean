@@ -175,7 +175,6 @@ theorem A_dvd_two_pow_add_five
 /-- If `x` is odd and `A ∣ 2^x + 5`, then `-10` is a square modulo `A`. -/
 theorem neg_ten_isSquare_of_odd
     {A x : ℕ}
-    (_hA : A ≠ 0)
     (hx : Odd x)
     (hdiv : A ∣ 2 ^ x + 5) :
     IsSquare ((-10 : ℤ) : ZMod A) := by
@@ -233,9 +232,6 @@ theorem no_solution_of_congruences
   have hAmod : A % 40 = 3 := by
     dsimp [A]
     exact A_mod_forty hx6 hx4 hy48 hy hsol
-  have hA_ne : A ≠ 0 := by
-    dsimp [A]
-    omega
   have hA_dvd : A ∣ 2 ^ x + 5 := by
     dsimp [A]
     exact A_dvd_two_pow_add_five hy hsol
@@ -243,7 +239,7 @@ theorem no_solution_of_congruences
     rw [Nat.odd_iff]
     omega
   have hsquare : IsSquare ((-10 : ℤ) : ZMod A) :=
-    neg_ten_isSquare_of_odd hA_ne hxodd hA_dvd
+    neg_ten_isSquare_of_odd hxodd hA_dvd
   have hjacobi : jacobiSym (-10) A = -1 :=
     jacobi_neg_ten_eq_neg_one hAmod
   exact ZMod.nonsquare_of_jacobiSym_eq_neg_one hjacobi hsquare

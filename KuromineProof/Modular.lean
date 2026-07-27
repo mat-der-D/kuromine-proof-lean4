@@ -10,14 +10,6 @@ theorem nat_mod_eq_of_zmod_eq {n a m : ℕ} [NeZero m]
   have hval := congrArg ZMod.val h
   simpa [ZMod.val_natCast] using hval
 
-/-- Convert a power identity in `ZMod m` to a natural-number remainder identity. -/
-theorem nat_pow_mod_eq_of_zmod_pow_eq {a n r m : ℕ} [NeZero m]
-    (h : (a : ZMod m) ^ n = (r : ZMod m)) :
-    a ^ n % m = r % m := by
-  apply nat_mod_eq_of_zmod_eq
-  push_cast
-  exact h
-
 /-- Interpret a natural-number solution in `ZMod m`. -/
 theorem zmod_equation_of_solution {m x y z : ℕ} [NeZero m]
     (h : Solves x y z) :
