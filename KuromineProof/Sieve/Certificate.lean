@@ -59,12 +59,9 @@ theorem congruences_of_large_solution
   rw [sieve_computation] at hcov
   rcases hcov with ⟨r, hrmem, _hrwf, hrmatch⟩
   simp [finalClasses] at hrmem
-  rcases hrmem with rfl | rfl | rfl <;> constructor
-  · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 4 ∣ 1008) hrmatch.1).trans (by norm_num)
-  · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 48 ∣ 336) hrmatch.2).trans (by norm_num)
-  · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 4 ∣ 1008) hrmatch.1).trans (by norm_num)
-  · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 48 ∣ 336) hrmatch.2).trans (by norm_num)
-  · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 4 ∣ 1008) hrmatch.1).trans (by norm_num)
-  · exact (mod_eq_of_mod_eq_of_dvd (by norm_num : 48 ∣ 336) hrmatch.2).trans (by norm_num)
+  rcases hrmem with rfl | rfl | rfl <;>
+    exact ⟨
+      (mod_eq_of_mod_eq_of_dvd (by norm_num : 4 ∣ 1008) hrmatch.1).trans (by norm_num),
+      (mod_eq_of_mod_eq_of_dvd (by norm_num : 48 ∣ 336) hrmatch.2).trans (by norm_num)⟩
 
 end KuromineProof
