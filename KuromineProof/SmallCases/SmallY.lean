@@ -53,10 +53,8 @@ theorem classify_solution_y_lt_three
       by_contra hnot
       exact no_solution_y0_x_ge_2 (by omega) h
     interval_cases x
-    · unfold Solves at h
-      have hz_bound : z < 3 := lt_of_pow_lt_pow_left' 3 (by omega)
-      interval_cases z <;> omega
-    · unfold Solves at h
+    all_goals
+      unfold Solves at h
       have hz_bound : z < 3 := lt_of_pow_lt_pow_left' 3 (by omega)
       interval_cases z <;> omega
   · exact (no_solution_y1 h).elim
