@@ -18,7 +18,7 @@ section SieveValidity
 set_option exponentiation.threshold 1000
 
 /-- Each concrete stage has the stated prime and exponent periods. -/
-theorem sieveStages_valid : ∀ s ∈ sieveStages, s.IsValid := by
+private theorem sieveStages_valid : ∀ s ∈ sieveStages, s.IsValid := by
   intro s hs
   simp [sieveStages] at hs
   rcases hs with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
@@ -39,7 +39,7 @@ set_option maxHeartbeats 0
 set_option exponentiation.threshold 1000
 
 /-- Closed finite computation of the simplified sieve. -/
-theorem sieve_computation :
+private theorem sieve_computation :
     runPeriodicSieve initialClasses sieveStages = finalClasses := by
   native_decide
 
