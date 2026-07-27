@@ -11,19 +11,17 @@ theorem classify_small_cases
     (h : Solves x y z) :
     (x = 1 ∧ y = 0 ∧ z = 2) ∨
     (x = 5 ∧ y = 3 ∧ z = 4) := by
-  rcases hsmall with hx6 | hy3
-  · by_cases hylt : y < 3
-    · left
-      exact classify_solution_y_lt_three hylt h
-    · have hyge : 3 ≤ y := by omega
-      by_cases hx5 : x = 5
-      · subst x
-        right
-        exact ⟨rfl, classify_solution_x_eq_five h⟩
-      · have hxlt : x < 5 := by omega
-        exact (no_solution_x_lt_five_y_ge_three hxlt hyge h).elim
+  by_cases hy3 : y < 3
   · left
     exact classify_solution_y_lt_three hy3 h
+  · have hyge : 3 ≤ y := by omega
+    have hx6 : x < 6 := hsmall.resolve_right hy3
+    by_cases hx5 : x = 5
+    · subst x
+      right
+      exact ⟨rfl, classify_solution_x_eq_five h⟩
+    · have hxlt : x < 5 := by omega
+      exact (no_solution_x_lt_five_y_ge_three hxlt hyge h).elim
 
 /-- The only solutions with `x < 6` are the two known solutions. -/
 theorem classify_x_lt_six
